@@ -23,7 +23,8 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [~] Data layer: Dexie schema (Tracker, Event, UserPreferences) + migrations
 - [ ] Crypto module: Argon2id KDF + AES-GCM; WebAuthn key wrapper; unit tests
 - [~] UI skeleton: tracker list, add tracker modal, increment button (persists event)
-- [ ] CI: GitHub Actions (lint/test/build), deploy staging to Pages
+- [x] CI: GitHub Actions (lint/test/build)
+- [ ] Deploy staging and prod with GitHub Pages
 
 ## Day 2 — UX & Insights
 - [ ] History list per tracker
