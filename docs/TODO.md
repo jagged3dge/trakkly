@@ -11,18 +11,20 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [x] Approve encryption UX (device unlock default, passcode fallback)
 - [x] Create docs: PLAN.md, TODO.md, DECISIONS.md
 - [x] Approve hosting plan (GitHub Pages)
+- [x] Initialize Git repository and branching (main → stage → dev) and create feature branch
 
 ## Day 1 — Foundations
-- [ ] Repo bootstrap: MIT license, README, codeowners, contribution guide
-- [ ] Tooling: Prettier, ESLint, TypeScript strict
-- [~] App scaffold: Vite + React + Tailwind + routing
+- [x] Repo bootstrap: MIT license, README, contribution guide
+- [x] Tooling: Prettier configured (format/format:check)
+- [x] App scaffold: Vite + React + Tailwind + routing (NotFound added)
 - [x] Provider/adapter system: interfaces + default implementations (telemetry, sync, crypto, device unlock) + React context
 - [x] Tailwind v4 PostCSS plugin setup and error fix
-- [ ] PWA: manifest, icons, Workbox service worker
-- [ ] Data layer: Dexie schema (Tracker, Event, UserPreferences) + migrations
+- [x] PWA: manifest + icons (VitePWA)
+- [x] Data layer: Dexie schema (Tracker, Event, UserPreferences) + initial versioned DB
 - [ ] Crypto module: Argon2id KDF + AES-GCM; WebAuthn key wrapper; unit tests
-- [ ] UI skeleton: tracker list, add tracker modal, increment button (persists event)
-- [ ] CI: GitHub Actions (lint/test/build), deploy staging to Pages
+- [x] UI skeleton: tracker list, add tracker modal, increment button (persists event)
+- [x] CI: GitHub Actions (lint/test/build)
+- [~] Deploy staging and prod with GitHub Pages (workflow added; enable Pages and promote branches)
 
 ## Day 2 — UX & Insights
 - [ ] History list per tracker
