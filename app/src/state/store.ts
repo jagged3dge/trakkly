@@ -12,6 +12,7 @@ export type TrakklyState = {
   increment: (trackerId: string) => Promise<void>
   adjust: (trackerId: string, delta: number, reason?: string) => Promise<void>
   listTrackers: () => Promise<Tracker[]>
+  togglePin: (trackerId: string, pinned?: boolean) => Promise<void>
 }
 
 function nowIso() { return new Date().toISOString() }
@@ -82,6 +83,16 @@ export const useTrakkly = create<TrakklyState>((set, _get) => ({
       deviceId: DEVICE_ID,
     }
     await db.events.add(ev)
+    tracker.updatedAt = nowIso()
+    await db.trackers.put(tracker)
+    const trackers = await db.trackers.toArray()
+    set({ trackers })
+  },
+
+  togglePin: async (trackerId, pinned) => {
+    const tracker = await db.trackers.get(trackerId)
+    if (!tracker) return
+    tracker.pinned = typeof pinned === 'boolean' ? pinned : !tracker.pinned
     tracker.updatedAt = nowIso()
     await db.trackers.put(tracker)
     const trackers = await db.trackers.toArray()
