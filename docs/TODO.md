@@ -11,17 +11,18 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [x] Approve encryption UX (device unlock default, passcode fallback)
 - [x] Create docs: PLAN.md, TODO.md, DECISIONS.md
 - [x] Approve hosting plan (GitHub Pages)
+- [x] Initialize Git repository and branching (main → stage → dev) and create feature branch
 
 ## Day 1 — Foundations
-- [ ] Repo bootstrap: MIT license, README, codeowners, contribution guide
+- [x] Repo bootstrap: MIT license, README, contribution guide
 - [ ] Tooling: Prettier, ESLint, TypeScript strict
 - [~] App scaffold: Vite + React + Tailwind + routing
 - [x] Provider/adapter system: interfaces + default implementations (telemetry, sync, crypto, device unlock) + React context
 - [x] Tailwind v4 PostCSS plugin setup and error fix
 - [ ] PWA: manifest, icons, Workbox service worker
-- [ ] Data layer: Dexie schema (Tracker, Event, UserPreferences) + migrations
+- [~] Data layer: Dexie schema (Tracker, Event, UserPreferences) + migrations
 - [ ] Crypto module: Argon2id KDF + AES-GCM; WebAuthn key wrapper; unit tests
-- [ ] UI skeleton: tracker list, add tracker modal, increment button (persists event)
+- [~] UI skeleton: tracker list, add tracker modal, increment button (persists event)
 - [ ] CI: GitHub Actions (lint/test/build), deploy staging to Pages
 
 ## Day 2 — UX & Insights
