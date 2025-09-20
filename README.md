@@ -30,6 +30,21 @@ In `app/`:
 - `npm run dev` — Start Vite dev server
 - `npm run build` — Type-check and build for production
 - `npm run preview` — Preview production build
+- `npm run format` — Format source with Prettier
+- `npm run format:check` — Check formatting
+
+## Deployment (GitHub Pages)
+
+We deploy from GitHub Actions using Pages (works for private repos; the site itself is public). The workflow is in `.github/workflows/pages.yml` and runs on pushes to `main` and `stage`, and on PRs targeting `main`.
+
+How it works:
+- The Vite config (`app/vite.config.ts`) uses `base: process.env.BASE_PATH || '/'` so assets resolve under `/<repo>/` when deployed to Pages.
+- The Pages workflow sets `BASE_PATH="/${{ github.event.repository.name }}/"` for builds and copies `404.html` for client-side routing.
+
+Steps to enable:
+1. In GitHub repo Settings → Pages, set Source: GitHub Actions.
+2. Push to `stage` (staging URL) or `main` (prod URL) and wait for the Pages workflow to complete.
+3. The deployed URL will be printed in the Actions run summary (environment `github-pages`).
 
 ## Branching strategy
 

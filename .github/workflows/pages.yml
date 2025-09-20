@@ -48,7 +48,7 @@ jobs:
           path: app/dist
 
   deploy:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage' || github.event_name == 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

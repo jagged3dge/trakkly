@@ -16,8 +16,16 @@ export const Root = () => (
   </div>
 )
 
+const NotFound = () => (
+  <div className="rounded-xl border border-neutral-200 p-4 text-sm dark:border-neutral-800">
+    <div className="font-medium">Page not found</div>
+    <p className="text-neutral-500">The page you requested does not exist.</p>
+  </div>
+)
+
 const rootRoute = createRootRoute({
   component: Root,
+  notFoundComponent: NotFound,
 })
 
 const indexRoute = createRoute({
