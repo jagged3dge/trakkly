@@ -68,7 +68,7 @@ Derived totals and charts are computed from `Event` log; no destructive edits.
 
 ## Milestones (4 days)
 - Day 1 — Foundations
-  - Repo bootstrap (MIT license, README). Vite + React + TS + Tailwind + PWA scaffold.
+  - Repo bootstrap (Proprietary license, README). Vite + React + TS + Tailwind + PWA scaffold.
   - Dexie schema for `Tracker`, `Event`, `UserPreferences` + migrations.
   - Crypto module (Argon2id + AES-GCM) and WebAuthn wrapper; unit tests.
   - UI skeleton: list, add tracker, increment button (writes event).

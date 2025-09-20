@@ -5,7 +5,7 @@ Mobile-only, offline-first PWA to track simple counters with one-tap increments 
 - Stack: React + Vite + TypeScript + Tailwind CSS + Dexie (IndexedDB)
 - PWA: VitePWA plugin; installable, offline-first shell
 - Observability: providers behind opt-in toggles (Sentry, PostHog)
-- License: MIT
+- License: Proprietary (All rights reserved)
 
 ## Monorepo layout
 

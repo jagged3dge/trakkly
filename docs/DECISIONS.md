@@ -41,3 +41,9 @@
 - Context: We want a predictable Git workflow with environments and feature isolation.
 - Decision: Initialize Git with three long-lived branches: `main` (prod), `stage` (staging), `dev` (integration). Develop via `feature/<name>` branches off `dev`. Use Conventional Commits (e.g., `feat:`, `fix:`, `docs:`, `build:`) and small atomic commits. Merge via PRs into `dev`, then promote to `stage` and `main`.
 - Consequences: Clear promotion path across environments; encourages clean history and release notes.
+
+## ADR-0008: Licensing Policy
+- Status: Accepted
+- Context: We initially planned MIT, but the project will be private and proprietary for now.
+- Decision: Use a Proprietary, all-rights-reserved license. Source code is not licensed for public reuse or distribution. Licensing terms may be revisited before public release.
+- Consequences: Private repository; contributors require explicit permission; update documentation and headers accordingly.
