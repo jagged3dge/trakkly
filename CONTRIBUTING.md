@@ -10,7 +10,10 @@ We welcome contributions! Please follow these guidelines to keep the project mai
 ## Branch protection & permissions
 - Direct pushes/merges to long-lived branches are restricted to maintainers only (`main`, `stage`, `dev`).
 - External contributors must use Pull Requests targeting `dev`. Maintainers review and merge.
-- Protected branches require status checks (lint, build, tests) and CODEOWNERS review.
+- Protected branches enforce:
+  - `main`: PR required, CODEOWNERS review, CI status checks required.
+  - `stage`: PR required, CODEOWNERS review, CI checks not required (fast promotion from `dev`).
+  - `dev`: Maintainers may push/merge directly (solo mode). PRs optional.
 - Emergency fixes may be pushed by maintainers directly with a follow-up PR documenting the change.
 
 ## Development
