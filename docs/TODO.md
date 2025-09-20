@@ -30,6 +30,7 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [x] History list per tracker
 - [~] Daily/weekly overview
 - [x] Adjustment flow (delta + reason)
+- [x] Testing setup: Vitest + Testing Library; initial tests for store/utils/components
 - [ ] Pins/favorites; tag filters
 - [ ] Charts: sparkline + daily bar
 - [ ] Preferences: timezone/locale/12-24h; a11y options
