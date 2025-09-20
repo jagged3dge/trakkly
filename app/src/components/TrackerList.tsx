@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useTrakkly } from '../state/store'
+import { AddTrackerModal } from './AddTrackerModal'
 
 export function TrackerList() {
   const { trackers, init, createTracker, increment } = useTrakkly()
   const [creating, setCreating] = useState(false)
+  const [showAdd, setShowAdd] = useState(false)
 
   useEffect(() => {
     init()
@@ -29,13 +31,21 @@ export function TrackerList() {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Your Trackers</h2>
-        <button
-          onClick={handleQuickAdd}
-          disabled={creating}
-          className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-3 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {creating ? 'Adding…' : 'Quick Add'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowAdd(true)}
+            className="inline-flex items-center justify-center rounded-lg border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            Add Tracker
+          </button>
+          <button
+            onClick={handleQuickAdd}
+            disabled={creating}
+            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-3 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {creating ? 'Adding…' : 'Quick Add'}
+          </button>
+        </div>
       </div>
       {trackers.length === 0 ? (
         <p className="text-sm text-neutral-500 dark:text-neutral-400">No trackers yet.</p>
@@ -59,6 +69,7 @@ export function TrackerList() {
           ))}
         </ul>
       )}
+      <AddTrackerModal open={showAdd} onClose={() => setShowAdd(false)} />
     </div>
   )
 }
