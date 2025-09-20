@@ -24,12 +24,12 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [ ] Crypto module: Argon2id KDF + AES-GCM; WebAuthn key wrapper; unit tests
 - [x] UI skeleton: tracker list, add tracker modal, increment button (persists event)
 - [x] CI: GitHub Actions (lint/test/build)
-- [~] Deploy staging and prod with GitHub Pages (workflow added; enable Pages and promote branches)
+- [x] Deploy staging and prod with GitHub Pages (enabled; stage/main deployed)
 
 ## Day 2 — UX & Insights
-- [ ] History list per tracker
-- [ ] Daily/weekly overview
-- [ ] Adjustment flow (delta + reason)
+- [x] History list per tracker
+- [~] Daily/weekly overview
+- [x] Adjustment flow (delta + reason)
 - [ ] Pins/favorites; tag filters
 - [ ] Charts: sparkline + daily bar
 - [ ] Preferences: timezone/locale/12-24h; a11y options
