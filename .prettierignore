@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.log
+app/dist/
+app/node_modules/
