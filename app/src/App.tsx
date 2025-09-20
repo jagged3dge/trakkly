@@ -1,4 +1,5 @@
 import './App.css'
+import { TrackerList } from './components/TrackerList'
 
 function App() {
   return (
@@ -9,15 +10,7 @@ function App() {
       </header>
       <main className="p-4">
         <div className="mx-auto max-w-md">
-          <div className="rounded-xl border border-neutral-200 p-4 shadow-sm dark:border-neutral-800">
-            <h2 className="mb-2 text-lg font-medium">Welcome</h2>
-            <p className="mb-4 text-sm text-neutral-600 dark:text-neutral-400">Get started by creating your first tracker.</p>
-            <button
-              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-neutral-900"
-            >
-              Add Tracker
-            </button>
-          </div>
+          <TrackerList />
         </div>
       </main>
     </div>
