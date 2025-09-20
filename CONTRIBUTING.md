@@ -7,6 +7,12 @@ We welcome contributions! Please follow these guidelines to keep the project mai
 - Keep commits small and atomic; use Conventional Commits (e.g., `feat:`, `fix:`, `docs:`)
 - Open PRs against `dev`. We promote to `stage` and `main` via release PRs.
 
+## Branch protection & permissions
+- Direct pushes/merges to long-lived branches are restricted to maintainers only (`main`, `stage`, `dev`).
+- External contributors must use Pull Requests targeting `dev`. Maintainers review and merge.
+- Protected branches require status checks (lint, build, tests) and CODEOWNERS review.
+- Emergency fixes may be pushed by maintainers directly with a follow-up PR documenting the change.
+
 ## Development
 - Requirements: Node 20+
 - Start dev server:

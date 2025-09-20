@@ -47,3 +47,45 @@
 - Context: We initially planned MIT, but the project will be private and proprietary for now.
 - Decision: Use a Proprietary, all-rights-reserved license. Source code is not licensed for public reuse or distribution. Licensing terms may be revisited before public release.
 - Consequences: Private repository; contributors require explicit permission; update documentation and headers accordingly.
+
+## ADR-0009: Testing Strategy
+- Status: Accepted
+- Context: We need pragmatic tests for an offline-first PWA with Dexie, React, and future crypto.
+- Decision:
+  - When to introduce tests
+    - Start now (Day 2), in parallel with UX/Insights: add unit and light integration tests for data layer and store actions.
+    - Expand on Day 3 for crypto/security: deterministic crypto tests (Argon2id, AES-GCM) with vectors and invariants (no nonce reuse; tamper detection).
+    - Add a small E2E slice later (end of Day 3 / Day 4) to validate PWA installability/offline and key flows.
+  - How to set it up (tools and config)
+    - Vitest + jsdom; @testing-library/react + user-event; @testing-library/jest-dom.
+    - fake-indexeddb for Dexie; helper to reset DB between tests.
+    - msw for future sync APIs.
+    - Node 20 WebCrypto for AES-GCM; Argon2id via WASM lib in node.
+    - vitest.config.ts: jsdom env, setupFiles `src/test/setupTests.ts`, coverage via @vitest/coverage-v8.
+    - tsconfig: add `types: ["vitest", "node"]` where appropriate.
+    - Scripts: `test`, `test:watch`, `test:coverage`.
+  - What to test first
+    - Store actions: createTracker, increment, adjust; use fake-indexeddb, reset DB between tests.
+    - Utilities: `lib/time.ts` (day/week), `lib/device.ts` (stable ID + fallback).
+    - Components: AddTrackerModal (valid save), TrackerList (quick add, increment), EventList (newest-first, reason).
+  - Rules for writing good tests (team policy)
+    - Pyramid: ~70% unit, 20% integration, 10% E2E.
+    - Behavior over implementation; Testing Library queries by role/name.
+    - Determinism and isolation: no network (use msw), reset DB, avoid fragile timers.
+    - Data realism: small realistic fixtures; crypto uses vectors and property checks.
+    - Maintainability: one concern per test; descriptive names; tests near code.
+    - Coverage: ≥80% for store/utils; component coverage informative.
+    - Performance: keep tests fast; avoid flakiness.
+- Consequences: Early confidence for core logic; security-critical code validated with vectors; CI enforcement without overburdening development.
+
+## ADR-0010: Repository Governance & Branch Protection
+- Status: Accepted
+- Context: We want only maintainers to be able to push/merge directly to long-lived branches, and everyone else must submit PRs.
+- Decision:
+  - Add CODEOWNERS with maintainers listed (`@jagged3dge`).
+  - Protect `main`, `stage`, and `dev` branches:
+    - Require pull request reviews (CODEOWNERS required).
+    - Require status checks to pass (CI job `app-lint-build`).
+    - Restrict who can push (maintainers only) to allow emergency direct pushes by maintainers.
+  - External contributors open PRs to `dev`; maintainers review/merge and promote via release PRs.
+- Consequences: Prevents accidental direct pushes by non-maintainers; enforces review and CI checks; aligns with CONTRIBUTING policy.
