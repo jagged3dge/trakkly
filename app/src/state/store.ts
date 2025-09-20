@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { db } from '../db/db'
 import type { Tracker, Event } from '../db/schema'
 import { uuid } from '../lib/id'
+import { getDeviceId } from '../lib/device'
 
 export type TrakklyState = {
   trackers: Tracker[]
@@ -14,7 +15,7 @@ export type TrakklyState = {
 }
 
 function nowIso() { return new Date().toISOString() }
-const DEVICE_ID = 'device-local' // TODO: replace with persistent device id
+const DEVICE_ID = getDeviceId()
 
 export const useTrakkly = create<TrakklyState>((set, _get) => ({
   trackers: [],
