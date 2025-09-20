@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { db } from '../db/db'
 import type { Event, Tracker } from '../db/schema'
-import { isSameDay, isSameWeek } from '../lib/time'
+import { eventsForThisWeek, eventsForToday, sumValue, totalsByDayInWeek, totalsByTracker } from '../lib/insights'
 
 export default function Insights() {
   const [events, setEvents] = useState<Event[]>([])
@@ -22,30 +22,13 @@ export default function Insights() {
   }, [])
 
   const now = new Date()
-  const today = useMemo(() => events.filter((e) => isSameDay(new Date(e.createdAt), now)), [events, now])
-  const thisWeek = useMemo(
-    () => events.filter((e) => isSameWeek(new Date(e.createdAt), now)),
-    [events, now],
-  )
-
-  function sum(vals: number[]) {
-    return vals.reduce((a, b) => a + b, 0)
-  }
-
-  const todayCount = sum(today.map((e) => e.value))
-  const weekCount = sum(thisWeek.map((e) => e.value))
-
-  const perTrackerToday = useMemo(() => {
-    const map = new Map<string, number>()
-    today.forEach((e) => map.set(e.trackerId, (map.get(e.trackerId) || 0) + e.value))
-    return map
-  }, [today])
-
-  const perTrackerWeek = useMemo(() => {
-    const map = new Map<string, number>()
-    thisWeek.forEach((e) => map.set(e.trackerId, (map.get(e.trackerId) || 0) + e.value))
-    return map
-  }, [thisWeek])
+  const today = useMemo(() => eventsForToday(events, now), [events, now])
+  const thisWeek = useMemo(() => eventsForThisWeek(events, now), [events, now])
+  const todayCount = useMemo(() => sumValue(today), [today])
+  const weekCount = useMemo(() => sumValue(thisWeek), [thisWeek])
+  const perTrackerToday = useMemo(() => totalsByTracker(today), [today])
+  const perTrackerWeek = useMemo(() => totalsByTracker(thisWeek), [thisWeek])
+  const weekDays = useMemo(() => totalsByDayInWeek(events, now), [events, now])
 
   if (loading) return <div className="text-sm text-neutral-500">Loading…</div>
 
@@ -59,6 +42,26 @@ export default function Insights() {
         <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
           <div className="text-xs text-neutral-500">This week</div>
           <div className="mt-1 text-2xl font-semibold">{weekCount}</div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="mb-2 font-medium">Week overview</div>
+        <div className="flex items-end gap-2" aria-label="Weekly totals bar chart">
+          {(() => {
+            const max = Math.max(1, ...weekDays.map((d) => d.total))
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            return weekDays.map((d, i) => (
+              <div key={i} className="flex w-8 flex-col items-center gap-1">
+                <div
+                  className="w-full rounded-md bg-indigo-600"
+                  style={{ height: `${(d.total / max) * 64}px` }}
+                  title={`${days[i]}: ${d.total}`}
+                />
+                <div className="text-[10px] text-neutral-500">{days[i]}</div>
+              </div>
+            ))
+          })()}
         </div>
       </div>
 
