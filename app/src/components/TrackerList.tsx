@@ -11,6 +11,7 @@ export function TrackerList() {
   const [adjustId, setAdjustId] = useState<string | null>(null)
   const [openHistory, setOpenHistory] = useState<Record<string, boolean>>({})
   const [showPinnedOnly, setShowPinnedOnly] = useState(false)
+  const [selectedTag, setSelectedTag] = useState<string>('')
 
   useEffect(() => {
     init()
@@ -56,15 +57,34 @@ export function TrackerList() {
         <p className="text-sm text-neutral-500 dark:text-neutral-400">No trackers yet.</p>
       ) : (
         <>
-          <div className="flex items-center justify-end">
-            <label className="inline-flex items-center gap-2 text-xs">
-              <input
-                type="checkbox"
-                checked={showPinnedOnly}
-                onChange={(e) => setShowPinnedOnly(e.target.checked)}
-              />
-              <span>Show pinned only</span>
-            </label>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="text-xs text-neutral-500">
+              {trackers.length} tracker{trackers.length !== 1 ? 's' : ''}
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="inline-flex items-center gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={showPinnedOnly}
+                  onChange={(e) => setShowPinnedOnly(e.target.checked)}
+                />
+                <span>Show pinned only</span>
+              </label>
+              <div className="inline-flex items-center gap-2 text-xs">
+                <label htmlFor="tag-filter" className="text-neutral-600 dark:text-neutral-300">Tag</label>
+                <select
+                  id="tag-filter"
+                  className="rounded-md border border-neutral-300 bg-white px-2 py-1 dark:border-neutral-700 dark:bg-neutral-900"
+                  value={selectedTag}
+                  onChange={(e) => setSelectedTag(e.target.value)}
+                >
+                  <option value="">All</option>
+                  {Array.from(new Set(trackers.flatMap((t) => t.tags))).sort((a, b) => a.localeCompare(b)).map((tag) => (
+                    <option key={tag} value={tag}>{tag}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
           <ul className="mt-2 grid grid-cols-1 gap-3">
             {trackers
@@ -76,6 +96,7 @@ export function TrackerList() {
                 return a.name.localeCompare(b.name)
               })
               .filter((t) => (showPinnedOnly ? t.pinned : true))
+              .filter((t) => (selectedTag ? t.tags.includes(selectedTag) : true))
               .map((t) => (
             <li key={t.id} className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
               <div className="flex items-center justify-between">
