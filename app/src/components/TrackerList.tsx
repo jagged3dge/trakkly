@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useTrakkly } from '../state/store'
 import { AddTrackerModal } from './AddTrackerModal'
+import { AdjustModal } from './AdjustModal'
+import { EventList } from './EventList'
 
 export function TrackerList() {
   const { trackers, init, createTracker, increment } = useTrakkly()
   const [creating, setCreating] = useState(false)
   const [showAdd, setShowAdd] = useState(false)
+  const [adjustId, setAdjustId] = useState<string | null>(null)
+  const [openHistory, setOpenHistory] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     init()
@@ -65,11 +69,37 @@ export function TrackerList() {
                   +{t.stepSize}
                 </button>
               </div>
+              <div className="mt-2 flex items-center justify-between">
+                <button
+                  onClick={() => setAdjustId(t.id)}
+                  className="rounded-lg border border-neutral-300 px-3 py-1 text-xs hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                >
+                  Adjust…
+                </button>
+                <button
+                  onClick={() => setOpenHistory((prev) => ({ ...prev, [t.id]: !prev[t.id] }))}
+                  className="rounded-lg border border-neutral-300 px-3 py-1 text-xs hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                >
+                  {openHistory[t.id] ? 'Hide History' : 'Show History'}
+                </button>
+              </div>
+              {openHistory[t.id] && (
+                <div className="mt-2">
+                  <EventList trackerId={t.id} />
+                </div>
+              )}
             </li>
           ))}
         </ul>
       )}
       <AddTrackerModal open={showAdd} onClose={() => setShowAdd(false)} />
+      {adjustId && (
+        <AdjustModal
+          open={!!adjustId}
+          trackerId={adjustId}
+          onClose={() => setAdjustId(null)}
+        />
+      )}
     </div>
   )
 }
