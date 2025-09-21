@@ -71,4 +71,17 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Coarse manual chunking to keep index lean and enable better long-term caching
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-router': ['@tanstack/react-router'],
+          'vendor-state': ['zustand'],
+          'vendor-db': ['dexie'],
+        },
+      },
+    },
+  },
 })
