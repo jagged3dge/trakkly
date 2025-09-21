@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.1 — 2025-09-22
+
+- Release hygiene: bump app version to 0.1.1 and include CHANGELOG in repo so tag points to the correct metadata ([#20](https://github.com/jagged3dge/trakkly/pull/20))
+
 ## v0.1.0 — 2025-09-22
 
 - Performance: route-based code splitting + prefetch on intent ([#15](https://github.com/jagged3dge/trakkly/pull/15))
