@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, createRoute, createRouter } from '@tanstack/react-router'
 import { TrackerList } from './components/TrackerList'
 import Insights from './pages/Insights'
+import Preferences from './pages/Preferences'
 
 // Root layout
 export const Root = () => (
@@ -22,6 +23,13 @@ export const Root = () => (
           className="rounded-lg border border-neutral-300 px-3 py-1 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
         >
           Insights
+        </Link>
+        <Link
+          to="/prefs"
+          activeProps={{ className: 'bg-indigo-600 text-white' }}
+          className="rounded-lg border border-neutral-300 px-3 py-1 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        >
+          Preferences
         </Link>
       </nav>
     </header>
@@ -57,7 +65,13 @@ const insightsRoute = createRoute({
   component: Insights,
 })
 
-const routeTree = rootRoute.addChildren([indexRoute, insightsRoute])
+const prefsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/prefs',
+  component: Preferences,
+})
+
+const routeTree = rootRoute.addChildren([indexRoute, insightsRoute, prefsRoute])
 
 export const router = createRouter({
   routeTree,
