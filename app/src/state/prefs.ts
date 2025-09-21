@@ -11,6 +11,8 @@ const defaultPrefs: UserPreferences = {
   clockFormat: '24',
   a11yPrefs: { reducedMotion: false, highContrast: false },
   telemetryEnabled: false,
+  deviceUnlockEnabled: false,
+  autoLockMinutes: 5,
 }
 
 export type PrefsState = {
@@ -24,6 +26,9 @@ export type PrefsState = {
   setReducedMotion: (value: boolean) => Promise<void>
   setHighContrast: (value: boolean) => Promise<void>
   setTelemetryEnabled: (value: boolean) => Promise<void>
+  setDeviceUnlockEnabled: (value: boolean) => Promise<void>
+  setDeviceCredentialId: (id?: string) => Promise<void>
+  setAutoLockMinutes: (mins?: number) => Promise<void>
 }
 
 async function ensurePrefs(): Promise<UserPreferences> {
@@ -82,6 +87,27 @@ export const usePrefs = create<PrefsState>((set, get) => ({
   setTelemetryEnabled: async (value) => {
     const current = get().prefs
     const next = { ...current, telemetryEnabled: value }
+    await db.preferences.put(next)
+    set({ prefs: next })
+  },
+
+  setDeviceUnlockEnabled: async (value) => {
+    const current = get().prefs
+    const next = { ...current, deviceUnlockEnabled: value }
+    await db.preferences.put(next)
+    set({ prefs: next })
+  },
+
+  setDeviceCredentialId: async (id) => {
+    const current = get().prefs
+    const next = { ...current, deviceCredentialId: id }
+    await db.preferences.put(next)
+    set({ prefs: next })
+  },
+
+  setAutoLockMinutes: async (mins) => {
+    const current = get().prefs
+    const next = { ...current, autoLockMinutes: mins }
     await db.preferences.put(next)
     set({ prefs: next })
   },
