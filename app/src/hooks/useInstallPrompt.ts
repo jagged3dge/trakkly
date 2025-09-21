@@ -1,11 +1,18 @@
 import { useEffect, useState, useCallback } from 'react'
 
+// TypeScript does not include BeforeInstallPromptEvent in standard DOM typings.
+// Define the minimal interface needed for this hook.
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
+
 export function useInstallPrompt() {
-  const [deferred, setDeferred] = useState<any | null>(null)
+  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null)
   const [installed, setInstalled] = useState(false)
 
   useEffect(() => {
-    function onBeforeInstallPrompt(e: any) {
+    function onBeforeInstallPrompt(e: BeforeInstallPromptEvent) {
       e.preventDefault()
       setDeferred(e)
     }
