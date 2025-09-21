@@ -38,4 +38,5 @@ export type UserPreferences = {
   locale?: string;
   clockFormat: ClockFormat;
   a11yPrefs?: AccessibilityPrefs;
+  telemetryEnabled?: boolean;
 };

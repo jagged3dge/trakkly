@@ -10,6 +10,7 @@ const defaultPrefs: UserPreferences = {
   locale: undefined,
   clockFormat: '24',
   a11yPrefs: { reducedMotion: false, highContrast: false },
+  telemetryEnabled: false,
 }
 
 export type PrefsState = {
@@ -22,6 +23,7 @@ export type PrefsState = {
   setClockFormat: (format: ClockFormat) => Promise<void>
   setReducedMotion: (value: boolean) => Promise<void>
   setHighContrast: (value: boolean) => Promise<void>
+  setTelemetryEnabled: (value: boolean) => Promise<void>
 }
 
 async function ensurePrefs(): Promise<UserPreferences> {
@@ -73,6 +75,13 @@ export const usePrefs = create<PrefsState>((set, get) => ({
   setHighContrast: async (value) => {
     const current = get().prefs
     const next = { ...current, a11yPrefs: { ...(current.a11yPrefs || {}), highContrast: value } }
+    await db.preferences.put(next)
+    set({ prefs: next })
+  },
+
+  setTelemetryEnabled: async (value) => {
+    const current = get().prefs
+    const next = { ...current, telemetryEnabled: value }
     await db.preferences.put(next)
     set({ prefs: next })
   },

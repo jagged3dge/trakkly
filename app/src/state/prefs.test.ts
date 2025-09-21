@@ -62,4 +62,14 @@ describe('preferences store', () => {
     expect(persisted?.a11yPrefs?.reducedMotion).toBe(true)
     expect(persisted?.a11yPrefs?.highContrast).toBe(true)
   })
+
+  it('telemetryEnabled defaults to false and can be toggled', async () => {
+    await usePrefs.getState().load()
+    expect(usePrefs.getState().prefs.telemetryEnabled).toBe(false)
+
+    await usePrefs.getState().setTelemetryEnabled(true)
+    expect(usePrefs.getState().prefs.telemetryEnabled).toBe(true)
+    const persisted = await db.preferences.get('user')
+    expect(persisted?.telemetryEnabled).toBe(true)
+  })
 })

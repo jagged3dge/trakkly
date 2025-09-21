@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { usePrefs } from '../state/prefs'
 
 export default function Preferences() {
-  const { prefs, loaded, load, setTimezone, setLocale, setClockFormat, setReducedMotion, setHighContrast } = usePrefs()
+  const { prefs, loaded, load, setTimezone, setLocale, setClockFormat, setReducedMotion, setHighContrast, setTelemetryEnabled } = usePrefs()
 
   useEffect(() => {
     if (!loaded) void load()
@@ -80,6 +80,21 @@ export default function Preferences() {
             High contrast
           </label>
         </div>
+      </div>
+
+      <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="mb-2 font-medium">Privacy</div>
+        <div className="text-sm text-neutral-600 dark:text-neutral-300 mb-2">
+          Telemetry is opt-in. When enabled, crash and product analytics may be collected (if keys are configured). No sensitive data is sent.
+        </div>
+        <label className="inline-flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={!!prefs.telemetryEnabled}
+            onChange={(e) => setTelemetryEnabled(e.target.checked)}
+          />
+          Enable telemetry
+        </label>
       </div>
     </div>
   )
