@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { db } from '../db/db'
 import type { Event, Tracker } from '../db/schema'
-import { eventsForThisWeek, eventsForToday, sumValue, totalsByDayInWeek, totalsByTracker } from '../lib/insights'
+import { eventsForThisWeek, eventsForToday, sumValue, totalsByDayInWeek, totalsByTracker, binsForToday, sparklinePath } from '../lib/insights'
 
 export default function Insights() {
   const [events, setEvents] = useState<Event[]>([])
@@ -29,6 +29,8 @@ export default function Insights() {
   const perTrackerToday = useMemo(() => totalsByTracker(today), [today])
   const perTrackerWeek = useMemo(() => totalsByTracker(thisWeek), [thisWeek])
   const weekDays = useMemo(() => totalsByDayInWeek(events, now), [events, now])
+  const todayBins = useMemo(() => binsForToday(events, now), [events, now])
+  const todayPath = useMemo(() => sparklinePath(todayBins), [todayBins])
 
   if (loading) return <div className="text-sm text-neutral-500">Loading…</div>
 
@@ -37,7 +39,12 @@ export default function Insights() {
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
           <div className="text-xs text-neutral-500">Today</div>
-          <div className="mt-1 text-2xl font-semibold">{todayCount}</div>
+          <div className="mt-1 flex items-end justify-between gap-3">
+            <div className="text-2xl font-semibold">{todayCount}</div>
+            <svg width="160" height="28" viewBox="0 0 160 28" role="img" aria-label="Today sparkline">
+              <path d={todayPath} fill="none" stroke="currentColor" strokeWidth="2" className="text-indigo-600" />
+            </svg>
+          </div>
         </div>
         <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
           <div className="text-xs text-neutral-500">This week</div>

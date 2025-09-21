@@ -31,8 +31,8 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [~] Daily/weekly overview
 - [x] Adjustment flow (delta + reason)
 - [x] Testing setup: Vitest + Testing Library; initial tests for store/utils/components
-- [ ] Pins/favorites; tag filters
-- [ ] Charts: sparkline + daily bar
+- [x] Pins/favorites; tag filters (pin/unpin + pinned-only and tag filter)
+- [~] Charts: sparkline + daily bar (weekly bar + sparkline complete; daily bar pending)
 - [ ] Preferences: timezone/locale/12-24h; a11y options
 
 ## Day 3 — Security & PWA polish

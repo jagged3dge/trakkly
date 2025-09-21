@@ -51,3 +51,37 @@ export function totalsByDayInWeek(events: Event[], now = new Date()): DayTotal[]
   }
   return days
 }
+
+// --- Minimal sparkline helpers ---
+
+// Returns 24 bins (per hour) totals for today
+export function binsForToday(events: Event[], now = new Date()): number[] {
+  const start = new Date(now)
+  start.setHours(0, 0, 0, 0)
+  const end = new Date(now)
+  end.setHours(23, 59, 59, 999)
+  const bins = new Array(24).fill(0)
+  for (const e of eventsForToday(events, now)) {
+    const d = toDate(e.createdAt)
+    const h = d.getHours()
+    if (h >= 0 && h < 24) bins[h] += e.value || 0
+  }
+  return bins
+}
+
+// Build a simple path string for an inline SVG sparkline
+export function sparklinePath(bins: number[], width = 160, height = 28, padding = 2): string {
+  const n = bins.length
+  if (n <= 1) return ''
+  const max = Math.max(0, ...bins)
+  const innerH = Math.max(1, height - padding * 2)
+  const stepX = n > 1 ? (width - padding * 2) / (n - 1) : 0
+  const points: Array<[number, number]> = bins.map((v, i) => {
+    const yRatio = max === 0 ? 0 : v / max
+    const x = padding + i * stepX
+    const y = padding + (innerH - yRatio * innerH)
+    return [x, y]
+  })
+  const [x0, y0] = points[0]
+  return 'M ' + x0 + ' ' + y0 + points.slice(1).map(([x, y]) => ` L ${x} ${y}`).join('')
+}
