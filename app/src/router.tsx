@@ -1,18 +1,56 @@
-import { Outlet, Link, createRootRoute, createRoute, createRouter, useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { Outlet, Link, createRootRoute, createRoute, createRouter, useNavigate, useRouterState } from '@tanstack/react-router'
 import { TrackerList } from './components/TrackerList'
 import Insights from './pages/Insights'
 import Preferences from './pages/Preferences'
 import Lock from './pages/Lock'
 import { useAdapters } from './providers/AdaptersProvider'
+import { usePrefs } from './state/prefs'
 
 // Root layout
 export const Root = () => {
   const { crypto } = useAdapters()
   const navigate = useNavigate()
+  const { location } = useRouterState()
+  const { prefs, loaded, load } = usePrefs()
   function handleLock() {
     crypto.lock()
     navigate({ to: '/lock' })
   }
+  // Ensure preferences are loaded for auto-lock
+  useEffect(() => {
+    if (!loaded) void load()
+  }, [loaded, load])
+
+  // Redirect to /lock when locked and accessing protected routes
+  useEffect(() => {
+    const path = location.pathname
+    const isProtected = path !== '/lock'
+    if (isProtected && !crypto.isUnlocked()) {
+      navigate({ to: '/lock' })
+    }
+  }, [crypto, location.pathname, navigate])
+
+  // Auto-lock on inactivity based on preferences
+  useEffect(() => {
+    if (!loaded) return
+    let timer: number | undefined
+    const reset = () => {
+      if (!prefs.autoLockMinutes || prefs.autoLockMinutes <= 0) return
+      if (timer) window.clearTimeout(timer)
+      timer = window.setTimeout(() => {
+        crypto.lock()
+        navigate({ to: '/lock' })
+      }, prefs.autoLockMinutes * 60 * 1000)
+    }
+    const events: Array<keyof WindowEventMap> = ['click', 'keydown', 'touchstart', 'mousemove']
+    events.forEach((ev) => window.addEventListener(ev, reset, { passive: true } as any))
+    reset()
+    return () => {
+      if (timer) window.clearTimeout(timer)
+      events.forEach((ev) => window.removeEventListener(ev, reset as any))
+    }
+  }, [prefs.autoLockMinutes, loaded, crypto, navigate])
   return (
   <div className="min-h-screen bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100">
     <header className="sticky top-0 z-10 border-b bg-white/80 px-4 py-3 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/80">
