@@ -36,10 +36,11 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [x] Preferences: timezone/locale/12-24h; a11y options
 
 ## Day 3 — Security & PWA polish
-- [ ] App lock: device unlock (WebAuthn) + passcode fallback; auto-lock
+- [x] App lock: passcode fallback + auto-lock; device unlock (WebAuthn) [beta]
 - [ ] Verify encryption-at-rest; manual inspection + tests
-- [ ] Telemetry: providers behind feature flags; settings toggles (all off by default)
+- [~] Telemetry: settings toggles in Preferences; providers behind feature flags (pending)
 - [ ] PWA: installability polish, offline caching tuning
+- [x] Change passcode (unwrap + rewrap master key)
 
 ## Day 4 — QA & Release
 - [ ] E2E smoke with Playwright

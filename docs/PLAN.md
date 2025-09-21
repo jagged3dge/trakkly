@@ -80,8 +80,8 @@ Derived totals and charts are computed from `Event` log; no destructive edits.
   - Pins/tags, filters, basic charts.
   - Preferences and accessibility refinements.
 - Day 3 — Security & PWA polish
-  - Crypto module (Argon2id + AES-GCM) and WebAuthn wrapper; unit tests with vectors and invariants.
-  - App lock (device unlock + passcode fallback), auto-lock.
+  - Crypto module: MVP shipped with PBKDF2 + AES-GCM (wrapped master key) and tests; upgrade path to Argon2id planned.
+  - App lock: passcode fallback shipped; device unlock (WebAuthn) scaffolding added; auto-lock implemented.
   - Verify at-rest encryption; telemetry toggles; PWA install polish.
 - Day 4 — QA & Release
   - E2E smoke (Playwright), Lighthouse a11y/perf/PWA.
