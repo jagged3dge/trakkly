@@ -4,7 +4,7 @@ import { usePrefs } from '../state/prefs'
 import { useAdapters } from '../providers/AdaptersProvider'
 
 export default function Preferences() {
-  const { prefs, loaded, load, setTimezone, setLocale, setClockFormat, setReducedMotion, setHighContrast, setTelemetryEnabled, setDeviceUnlockEnabled, setDeviceCredentialId } = usePrefs()
+  const { prefs, loaded, load, setTimezone, setLocale, setClockFormat, setReducedMotion, setHighContrast, setTelemetryEnabled, setDeviceUnlockEnabled, setDeviceCredentialId, setAutoLockMinutes } = usePrefs()
   const { crypto, deviceUnlock } = useAdapters()
   const navigate = useNavigate()
   const [deviceSupported, setDeviceSupported] = useState<boolean>(false)
@@ -126,6 +126,24 @@ export default function Preferences() {
         >
           Lock now
         </button>
+        <div className="mt-3">
+          <label htmlFor="auto-lock" className="block text-sm mb-1">Auto-lock after (minutes)</label>
+          <input
+            id="auto-lock"
+            type="number"
+            min={0}
+            step={1}
+            value={typeof prefs.autoLockMinutes === 'number' ? prefs.autoLockMinutes : ''}
+            onChange={(e) => {
+              const v = e.target.value
+              const n = v === '' ? undefined : Math.max(0, Math.floor(Number(v)))
+              void setAutoLockMinutes(n)
+            }}
+            placeholder="5"
+            className="w-36 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-900"
+          />
+          <div className="mt-1 text-xs text-neutral-500">Set to 0 to disable auto-lock.</div>
+        </div>
         <div className="mt-4 border-t border-neutral-200 pt-4 dark:border-neutral-800">
           <div className="mb-2 font-medium">Device unlock (beta)</div>
           <div className="text-xs text-neutral-600 dark:text-neutral-300 mb-2">
