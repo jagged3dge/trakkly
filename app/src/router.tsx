@@ -6,6 +6,7 @@ import Preferences from './pages/Preferences'
 import Lock from './pages/Lock'
 import { useAdapters } from './providers/AdaptersProvider'
 import { usePrefs } from './state/prefs'
+import { useInstallPrompt } from './hooks/useInstallPrompt'
 
 // Root layout
 export const Root = () => {
@@ -13,6 +14,7 @@ export const Root = () => {
   const navigate = useNavigate()
   const { location } = useRouterState()
   const { prefs, loaded, load } = usePrefs()
+  const { canInstall, promptInstall } = useInstallPrompt()
   function handleLock() {
     crypto.lock()
     navigate({ to: '/lock' })
@@ -59,7 +61,12 @@ export const Root = () => {
           <h1 className="text-2xl font-semibold tracking-tight">Trakkly</h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">Offline-first counters with privacy</p>
         </div>
-        <button onClick={handleLock} className="rounded-lg border border-neutral-300 px-3 py-1 text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800">Lock</button>
+        <div className="flex items-center gap-2">
+          {canInstall && (
+            <button onClick={() => void promptInstall()} className="rounded-lg border border-neutral-300 px-3 py-1 text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800">Install</button>
+          )}
+          <button onClick={handleLock} className="rounded-lg border border-neutral-300 px-3 py-1 text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800">Lock</button>
+        </div>
       </div>
       <nav className="mt-2 flex gap-2 text-sm">
         <Link
