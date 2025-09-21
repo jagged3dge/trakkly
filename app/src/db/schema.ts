@@ -39,4 +39,9 @@ export type UserPreferences = {
   clockFormat: ClockFormat;
   a11yPrefs?: AccessibilityPrefs;
   telemetryEnabled?: boolean;
+  // Key management (MVP: PBKDF2-derived KEK + wrapped data key)
+  keySalt?: string; // base64
+  wrappedKey?: string; // base64(iv || ciphertext)
+  kdf?: 'pbkdf2';
+  kdfParams?: { iterations: number };
 };
