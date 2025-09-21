@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { loadEnv, type EnvConfig } from '../config/env';
 import { NoopTelemetryAdapter, type TelemetryAdapter } from '../adapters/telemetry';
 import { LocalOnlySyncAdapter, type SyncAdapter } from '../adapters/sync';
-import { PlaceholderCryptoEngine, type CryptoEngine } from '../adapters/crypto';
+import { PlaceholderCryptoEngine, WebCryptoEngine, type CryptoEngine } from '../adapters/crypto';
 import { NoopDeviceUnlockAdapter, type DeviceUnlockAdapter } from '../adapters/deviceUnlock';
 import { usePrefs } from '../state/prefs';
 
@@ -33,7 +33,11 @@ export function AdaptersProvider({ children }: { children: React.ReactNode }) {
     return s;
   }, []);
 
-  const crypto = useMemo(() => new PlaceholderCryptoEngine(), []);
+  // Use WebCrypto engine in browsers and tests; fall back to placeholder if subtle is unavailable
+  const crypto = useMemo<CryptoEngine>(() => {
+    const hasSubtle = typeof globalThis !== 'undefined' && !!(globalThis.crypto as any)?.subtle
+    return hasSubtle ? new WebCryptoEngine() : new PlaceholderCryptoEngine()
+  }, []);
   const deviceUnlock = useMemo(() => new NoopDeviceUnlockAdapter(), []);
 
   const value: Adapters = { env, telemetry, sync, crypto, deviceUnlock };
