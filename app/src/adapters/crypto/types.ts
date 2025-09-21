@@ -5,6 +5,8 @@ export interface CryptoEngine {
   unlockWithDevice?(): Promise<boolean>;
   // Unlock using passcode-derived key
   unlockWithPasscode?(passcode: string): Promise<boolean>;
+  // Change passcode by rewrapping the data key
+  changePasscode?(oldPasscode: string, newPasscode: string): Promise<boolean>;
   // Encryption primitives (placeholders for now)
   encrypt?(plain: Uint8Array): Promise<Uint8Array>;
   decrypt?(cipher: Uint8Array): Promise<Uint8Array>;

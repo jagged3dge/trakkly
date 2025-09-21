@@ -112,4 +112,51 @@ export class WebCryptoEngine implements CryptoEngine {
     const pt = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, this.dataKey, ct))
     return pt
   }
+
+  async changePasscode(oldPasscode: string, newPasscode: string): Promise<boolean> {
+    const prefs = await getPrefs()
+    if (!prefs.wrappedKey || !prefs.keySalt) return false
+
+    // Derive old KEK and try to unwrap
+    const oldBase = await crypto.subtle.importKey('raw', enc(oldPasscode), 'PBKDF2', false, ['deriveKey'])
+    const oldKek = await crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt: fromB64(prefs.keySalt), iterations: prefs.kdfParams?.iterations || 150_000, hash: 'SHA-256' },
+      oldBase,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    )
+    const payload = fromB64(prefs.wrappedKey)
+    const iv = payload.slice(0, 12)
+    const ct = payload.slice(12)
+    let raw: Uint8Array
+    try {
+      raw = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, oldKek, ct))
+    } catch {
+      return false
+    }
+    // Derive new KEK with new salt and wrap the same raw key
+    const newSalt = crypto.getRandomValues(new Uint8Array(16))
+    const iterations = prefs.kdfParams?.iterations || 150_000
+    const newBase = await crypto.subtle.importKey('raw', enc(newPasscode), 'PBKDF2', false, ['deriveKey'])
+    const newKek = await crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt: newSalt, iterations, hash: 'SHA-256' },
+      newBase,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    )
+    const newIv = crypto.getRandomValues(new Uint8Array(12))
+    const newWrapped = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: newIv }, newKek, raw))
+    const newPayload = new Uint8Array(newIv.length + newWrapped.length)
+    newPayload.set(newIv, 0)
+    newPayload.set(newWrapped, newIv.length)
+
+    prefs.keySalt = toB64(newSalt)
+    prefs.kdf = 'pbkdf2'
+    prefs.kdfParams = { iterations }
+    prefs.wrappedKey = toB64(newPayload)
+    await savePrefs(prefs)
+    return true
+  }
 }
