@@ -1,8 +1,12 @@
 import { useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { usePrefs } from '../state/prefs'
+import { useAdapters } from '../providers/AdaptersProvider'
 
 export default function Preferences() {
   const { prefs, loaded, load, setTimezone, setLocale, setClockFormat, setReducedMotion, setHighContrast, setTelemetryEnabled } = usePrefs()
+  const { crypto } = useAdapters()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!loaded) void load()
@@ -95,6 +99,17 @@ export default function Preferences() {
           />
           Enable telemetry
         </label>
+      </div>
+
+      <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="mb-2 font-medium">Security</div>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-2">Lock the app now. You will need your passcode to unlock.</p>
+        <button
+          onClick={() => { crypto.lock(); navigate({ to: '/lock' }) }}
+          className="inline-flex items-center justify-center rounded-lg border border-neutral-300 px-3 py-2 text-sm hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        >
+          Lock now
+        </button>
       </div>
     </div>
   )
