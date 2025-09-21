@@ -89,3 +89,22 @@
     - Dev is relaxed in solo mode: direct pushes allowed for maintainers; PR optional.
   - External contributors open PRs to `dev`; maintainers review/merge and promote via release PRs.
 - Consequences: Prevents accidental direct pushes by non-maintainers; enforces review and CI checks; aligns with CONTRIBUTING policy.
+
+## ADR-0011: Crypto Key Management (MVP) and Upgrade Plan
+- Status: Accepted
+- Context: We need at-rest encryption with an app lock. The full plan calls for Argon2id KDF and device unlock (WebAuthn). For speed, MVP ships PBKDF2 + AES-GCM with a wrapped data key, and a passcode-based unlock screen.
+- Decision:
+  - Master Data Key: 256-bit AES-GCM key generated via WebCrypto and stored only wrapped at rest.
+  - KEK (Key Encryption Key): derived from user passcode with PBKDF2 (SHA-256, ≥150k iterations in MVP) and used to wrap/unwrap the master key via AES-GCM.
+  - Storage (in `UserPreferences`):
+    - `keySalt` (base64), `wrappedKey` (base64 of iv||ciphertext), `kdf: 'pbkdf2'`, `kdfParams: { iterations }`.
+  - Unlock flow: derive KEK from passcode+salt; decrypt `wrappedKey` to import master key. On first unlock, generate and persist wrapped master key.
+  - Encryption primitives: AES-GCM with random 96-bit IV per encryption; prepend IV to ciphertext.
+  - App Lock: simple passcode UI that calls `unlockWithPasscode`; a "Lock" action discards in-memory key and navigates to `/lock`.
+  - Upgrade Plan (Argon2id): introduce Argon2id KDF (WASM) with tuned params and a migration path. Keep PBKDF2 unlock for existing users; on successful PBKDF2 unlock, rewrap master key with Argon2id-derived KEK and persist alongside or replacing the old field, with a version flag.
+  - Device Unlock (WebAuthn): add an optional device-protected KEK flow. When enabled, wrap the master key with a WebAuthn credential; unlock via platform authenticator. Keep passcode fallback.
+- Consequences: MVP ships quickly with a reasonable KDF (PBKDF2) and AES-GCM, enabling lock/unlock and at-rest protection. Clear path to stronger KDF (Argon2id) and WebAuthn without breaking users.
+- Security Notes:
+  - Always generate new random IVs; never reuse nonces. Detect tampering via GCM tag failure.
+  - Passcodes must not be stored; only salt and derived-key parameters are persisted.
+  - Consider setting a sane minimum passcode length and optional auto-lock timer in preferences.
