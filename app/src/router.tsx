@@ -1,9 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Outlet, Link, createRootRoute, createRoute, createRouter, useNavigate, useRouterState } from '@tanstack/react-router'
 import { TrackerList } from './components/TrackerList'
-import Insights from './pages/Insights'
-import Preferences from './pages/Preferences'
-import Lock from './pages/Lock'
 import { useAdapters } from './providers/AdaptersProvider'
 import { usePrefs } from './state/prefs'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
@@ -30,6 +27,9 @@ export const Root = () => {
     crypto.lock()
     navigate({ to: '/lock' })
   }
+  // Prefetch route chunks on intent (hover/focus) for better UX without impacting FCP
+  const prefetchInsights = () => { void import('./pages/Insights') }
+  const prefetchPrefs = () => { void import('./pages/Preferences') }
   // Ensure preferences are loaded for auto-lock
   useEffect(() => {
     if (!loaded) void load()
@@ -94,6 +94,8 @@ export const Root = () => {
           to="/insights"
           activeProps={{ className: 'bg-indigo-600 text-white' }}
           className="rounded-lg border border-neutral-300 px-3 py-1 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          onMouseEnter={prefetchInsights}
+          onFocus={prefetchInsights}
         >
           Insights
         </Link>
@@ -101,6 +103,8 @@ export const Root = () => {
           to="/prefs"
           activeProps={{ className: 'bg-indigo-600 text-white' }}
           className="rounded-lg border border-neutral-300 px-3 py-1 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          onMouseEnter={prefetchPrefs}
+          onFocus={prefetchPrefs}
         >
           Preferences
         </Link>
@@ -121,6 +125,29 @@ const NotFound = () => (
   </div>
 )
 
+// Lazy-loaded route components to enable route-based code splitting
+const InsightsLazy = lazy(() => import('./pages/Insights'))
+const PreferencesLazy = lazy(() => import('./pages/Preferences'))
+const LockLazy = lazy(() => import('./pages/Lock'))
+
+const InsightsRouteComp = () => (
+  <Suspense fallback={<div className="text-sm text-neutral-500">Loading…</div>}>
+    <InsightsLazy />
+  </Suspense>
+)
+
+const PreferencesRouteComp = () => (
+  <Suspense fallback={<div className="text-sm text-neutral-500">Loading…</div>}>
+    <PreferencesLazy />
+  </Suspense>
+)
+
+const LockRouteComp = () => (
+  <Suspense fallback={<div className="text-sm text-neutral-500">Loading…</div>}>
+    <LockLazy />
+  </Suspense>
+)
+
 const rootRoute = createRootRoute({
   component: Root,
   notFoundComponent: NotFound,
@@ -135,19 +162,19 @@ const indexRoute = createRoute({
 const insightsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/insights',
-  component: Insights,
+  component: InsightsRouteComp,
 })
 
 const prefsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/prefs',
-  component: Preferences,
+  component: PreferencesRouteComp,
 })
 
 const lockRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/lock',
-  component: Lock,
+  component: LockRouteComp,
 })
 
 const routeTree = rootRoute.addChildren([indexRoute, insightsRoute, prefsRoute, lockRoute])
