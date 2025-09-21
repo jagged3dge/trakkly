@@ -84,8 +84,8 @@
 - Decision:
   - Add CODEOWNERS with maintainers listed (`@jagged3dge`).
   - Protect `main`, `stage`, and `dev` branches:
-    - Require pull request reviews (CODEOWNERS required).
-    - Require status checks to pass (CI job `app-lint-build`).
-    - Restrict who can push (maintainers only) to allow emergency direct pushes by maintainers.
+    - Require pull request reviews (CODEOWNERS required) on `main` and `stage`.
+    - Require status checks to pass (CI job `app-lint-build`) on `main` only.
+    - Dev is relaxed in solo mode: direct pushes allowed for maintainers; PR optional.
   - External contributors open PRs to `dev`; maintainers review/merge and promote via release PRs.
 - Consequences: Prevents accidental direct pushes by non-maintainers; enforces review and CI checks; aligns with CONTRIBUTING policy.
