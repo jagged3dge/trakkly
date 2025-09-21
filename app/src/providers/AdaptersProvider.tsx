@@ -4,6 +4,7 @@ import { NoopTelemetryAdapter, type TelemetryAdapter } from '../adapters/telemet
 import { LocalOnlySyncAdapter, type SyncAdapter } from '../adapters/sync';
 import { PlaceholderCryptoEngine, WebCryptoEngine, type CryptoEngine } from '../adapters/crypto';
 import { NoopDeviceUnlockAdapter, type DeviceUnlockAdapter } from '../adapters/deviceUnlock';
+import { WebAuthnDeviceUnlockAdapter } from '../adapters/deviceUnlock/webauthn';
 import { usePrefs } from '../state/prefs';
 
 export type Adapters = {
@@ -38,7 +39,10 @@ export function AdaptersProvider({ children }: { children: React.ReactNode }) {
     const hasSubtle = typeof globalThis !== 'undefined' && !!(globalThis.crypto as any)?.subtle
     return hasSubtle ? new WebCryptoEngine() : new PlaceholderCryptoEngine()
   }, []);
-  const deviceUnlock = useMemo(() => new NoopDeviceUnlockAdapter(), []);
+  const deviceUnlock = useMemo<DeviceUnlockAdapter>(() => {
+    const hasWebAuthn = typeof window !== 'undefined' && 'PublicKeyCredential' in window && 'credentials' in navigator
+    return hasWebAuthn ? new WebAuthnDeviceUnlockAdapter() : new NoopDeviceUnlockAdapter()
+  }, []);
 
   const value: Adapters = { env, telemetry, sync, crypto, deviceUnlock };
 
