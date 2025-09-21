@@ -2,9 +2,9 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [ main, stage ]
+    branches: [ stage, main ]
   pull_request:
-    branches: [ main ]
+    branches: [ stage, main ]
 
 permissions:
   contents: read
@@ -48,7 +48,7 @@ jobs:
           path: app/dist
 
   deploy:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage' || github.event_name == 'pull_request'
+    if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:

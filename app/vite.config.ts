@@ -12,6 +12,24 @@ export default defineConfig({
       registerType: 'autoUpdate',
       workbox: {
         navigateFallback: 'index.html',
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: { maxEntries: 16, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'images',
+              expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'Trakkly',
@@ -27,15 +45,43 @@ export default defineConfig({
             src: 'icons/icon-192.svg',
             sizes: '192x192',
             type: 'image/svg+xml',
+            purpose: 'any maskable',
           },
           {
             src: 'icons/icon-512.svg',
             sizes: '512x512',
             type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+          // PNG maskable icons (provide these files for best Android support)
+          {
+            src: 'icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: 'icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
           // maskable icons can be added later with PNGs for better Android support
         ],
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Coarse manual chunking to keep index lean and enable better long-term caching
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-router': ['@tanstack/react-router'],
+          'vendor-state': ['zustand'],
+          'vendor-db': ['dexie'],
+        },
+      },
+    },
+  },
 })

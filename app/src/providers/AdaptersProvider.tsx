@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { loadEnv, type EnvConfig } from '../config/env';
-import { NoopTelemetryAdapter, type TelemetryAdapter } from '../adapters/telemetry';
+import { MultiTelemetryAdapter, SentryTelemetryAdapter, PosthogTelemetryAdapter, type TelemetryAdapter } from '../adapters/telemetry';
 import { LocalOnlySyncAdapter, type SyncAdapter } from '../adapters/sync';
-import { PlaceholderCryptoEngine, type CryptoEngine } from '../adapters/crypto';
+import { PlaceholderCryptoEngine, WebCryptoEngine, type CryptoEngine } from '../adapters/crypto';
 import { NoopDeviceUnlockAdapter, type DeviceUnlockAdapter } from '../adapters/deviceUnlock';
+import { WebAuthnDeviceUnlockAdapter } from '../adapters/deviceUnlock/webauthn';
+import { usePrefs } from '../state/prefs';
 
 export type Adapters = {
   env: EnvConfig;
@@ -17,11 +19,14 @@ const AdaptersContext = createContext<Adapters | null>(null);
 
 export function AdaptersProvider({ children }: { children: React.ReactNode }) {
   const env = useMemo(() => loadEnv(), []);
+  const { prefs, loaded, load } = usePrefs();
 
-  const telemetry = useMemo(() => {
-    const t = new NoopTelemetryAdapter();
-    t.setEnabled(!!env.telemetry.enabled);
-    return t;
+  const { telemetry, sentryAdapter, posthogAdapter } = useMemo(() => {
+    const sentryAdapter = new SentryTelemetryAdapter(env.telemetry.sentryDsn)
+    const posthogAdapter = new PosthogTelemetryAdapter(env.telemetry.posthogKey, env.telemetry.posthogHost)
+    const telemetry = new MultiTelemetryAdapter([sentryAdapter, posthogAdapter])
+    telemetry.setEnabled(!!env.telemetry.enabled)
+    return { telemetry, sentryAdapter, posthogAdapter }
   }, [env]);
 
   const sync = useMemo(() => {
@@ -30,10 +35,30 @@ export function AdaptersProvider({ children }: { children: React.ReactNode }) {
     return s;
   }, []);
 
-  const crypto = useMemo(() => new PlaceholderCryptoEngine(), []);
-  const deviceUnlock = useMemo(() => new NoopDeviceUnlockAdapter(), []);
+  // Use WebCrypto engine in browsers and tests; fall back to placeholder if subtle is unavailable
+  const crypto = useMemo<CryptoEngine>(() => {
+    const hasSubtle = typeof globalThis !== 'undefined' && !!(globalThis.crypto as any)?.subtle
+    return hasSubtle ? new WebCryptoEngine() : new PlaceholderCryptoEngine()
+  }, []);
+  const deviceUnlock = useMemo<DeviceUnlockAdapter>(() => {
+    const hasWebAuthn = typeof window !== 'undefined' && 'PublicKeyCredential' in window && 'credentials' in navigator
+    return hasWebAuthn ? new WebAuthnDeviceUnlockAdapter() : new NoopDeviceUnlockAdapter()
+  }, []);
 
   const value: Adapters = { env, telemetry, sync, crypto, deviceUnlock };
+
+  // Load preferences on app start to apply telemetry preference
+  useEffect(() => {
+    if (!loaded) void load();
+  }, [loaded, load]);
+
+  // Apply telemetry preferences whenever they change
+  useEffect(() => {
+    const base = !!env.telemetry.enabled && !!prefs.telemetryEnabled
+    telemetry.setEnabled(base)
+    sentryAdapter.setEnabled(base && !!env.telemetry.sentryDsn && !!prefs.sentryEnabled)
+    posthogAdapter.setEnabled(base && !!env.telemetry.posthogKey && !!prefs.posthogEnabled)
+  }, [env.telemetry.enabled, env.telemetry.sentryDsn, env.telemetry.posthogKey, prefs.telemetryEnabled, prefs.sentryEnabled, prefs.posthogEnabled, telemetry, sentryAdapter, posthogAdapter]);
 
   return (
     <AdaptersContext.Provider value={value}>{children}</AdaptersContext.Provider>

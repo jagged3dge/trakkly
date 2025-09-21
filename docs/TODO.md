@@ -24,21 +24,23 @@ Legend: [ ] pending, [~] in progress, [x] done
 - [ ] Crypto module: Argon2id KDF + AES-GCM; WebAuthn key wrapper; unit tests
 - [x] UI skeleton: tracker list, add tracker modal, increment button (persists event)
 - [x] CI: GitHub Actions (lint/test/build)
-- [~] Deploy staging and prod with GitHub Pages (workflow added; enable Pages and promote branches)
+- [x] Deploy staging and prod with GitHub Pages (enabled; stage/main deployed)
 
 ## Day 2 — UX & Insights
-- [ ] History list per tracker
-- [ ] Daily/weekly overview
-- [ ] Adjustment flow (delta + reason)
-- [ ] Pins/favorites; tag filters
-- [ ] Charts: sparkline + daily bar
-- [ ] Preferences: timezone/locale/12-24h; a11y options
+- [x] History list per tracker
+- [~] Daily/weekly overview
+- [x] Adjustment flow (delta + reason)
+- [x] Testing setup: Vitest + Testing Library; initial tests for store/utils/components
+- [x] Pins/favorites; tag filters (pin/unpin + pinned-only and tag filter)
+- [x] Charts: sparkline + daily bar (weekly bar + sparkline complete; last 7 days bar added)
+- [x] Preferences: timezone/locale/12-24h; a11y options
 
 ## Day 3 — Security & PWA polish
-- [ ] App lock: device unlock (WebAuthn) + passcode fallback; auto-lock
+- [x] App lock: passcode fallback + auto-lock; device unlock (WebAuthn) [beta]
 - [ ] Verify encryption-at-rest; manual inspection + tests
-- [ ] Telemetry: providers behind feature flags; settings toggles (all off by default)
+- [~] Telemetry: settings toggles in Preferences; providers behind feature flags (pending)
 - [ ] PWA: installability polish, offline caching tuning
+- [x] Change passcode (unwrap + rewrap master key)
 
 ## Day 4 — QA & Release
 - [ ] E2E smoke with Playwright
