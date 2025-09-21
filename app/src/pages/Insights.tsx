@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { db } from '../db/db'
 import type { Event, Tracker } from '../db/schema'
-import { eventsForThisWeek, eventsForToday, sumValue, totalsByDayInWeek, totalsByTracker, binsForToday, sparklinePath } from '../lib/insights'
+import { eventsForThisWeek, eventsForToday, sumValue, totalsByDayInWeek, totalsByTracker, binsForToday, sparklinePath, totalsByLastNDays } from '../lib/insights'
 
 export default function Insights() {
   const [events, setEvents] = useState<Event[]>([])
@@ -31,6 +31,7 @@ export default function Insights() {
   const weekDays = useMemo(() => totalsByDayInWeek(events, now), [events, now])
   const todayBins = useMemo(() => binsForToday(events, now), [events, now])
   const todayPath = useMemo(() => sparklinePath(todayBins), [todayBins])
+  const last7 = useMemo(() => totalsByLastNDays(events, 7, now), [events, now])
 
   if (loading) return <div className="text-sm text-neutral-500">Loading…</div>
 
@@ -68,6 +69,28 @@ export default function Insights() {
                 <div className="text-[10px] text-neutral-500">{days[i]}</div>
               </div>
             ))
+          })()}
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="mb-2 font-medium">Last 7 days</div>
+        <div className="flex items-end gap-2" aria-label="Last 7 days totals bar chart">
+          {(() => {
+            const max = Math.max(1, ...last7.map((d) => d.total))
+            return last7.map((d, i) => {
+              const label = d.date.toLocaleDateString(undefined, { weekday: 'short' })
+              return (
+                <div key={i} className="flex w-8 flex-col items-center gap-1">
+                  <div
+                    className="w-full rounded-md bg-indigo-600"
+                    style={{ height: `${(d.total / max) * 64}px` }}
+                    title={`${label}: ${d.total}`}
+                  />
+                  <div className="text-[10px] text-neutral-500">{label}</div>
+                </div>
+              )
+            })
           })()}
         </div>
       </div>

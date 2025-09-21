@@ -85,3 +85,27 @@ export function sparklinePath(bins: number[], width = 160, height = 28, padding 
   const [x0, y0] = points[0]
   return 'M ' + x0 + ' ' + y0 + points.slice(1).map(([x, y]) => ` L ${x} ${y}`).join('')
 }
+
+// --- Daily bars over a sliding window ---
+
+export function totalsByLastNDays(events: Event[], n: number, now = new Date()): DayTotal[] {
+  const end = new Date(now)
+  end.setHours(0, 0, 0, 0)
+  const start = new Date(end)
+  start.setDate(end.getDate() - (n - 1))
+  const days: DayTotal[] = Array.from({ length: n }, (_, i) => {
+    const d = new Date(start)
+    d.setDate(start.getDate() + i)
+    d.setHours(0, 0, 0, 0)
+    return { date: d, total: 0 }
+  })
+  for (const e of events) {
+    const d = toDate(e.createdAt)
+    const dd = new Date(d)
+    dd.setHours(0, 0, 0, 0)
+    if (dd < start || dd > end) continue
+    const idx = Math.floor((dd.getTime() - start.getTime()) / (24 * 60 * 60 * 1000))
+    if (idx >= 0 && idx < n) days[idx].total += e.value || 0
+  }
+  return days
+}
