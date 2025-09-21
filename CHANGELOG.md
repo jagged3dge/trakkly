@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.2 — 2025-09-22
+
+- SEO: make `og:image` and `twitter:image` absolute for better link unfurling ([#22](https://github.com/jagged3dge/trakkly/pull/22))
+
 ## v0.1.1 — 2025-09-22
 
 - Release hygiene: bump app version to 0.1.1 and include CHANGELOG in repo so tag points to the correct metadata ([#20](https://github.com/jagged3dge/trakkly/pull/20))
