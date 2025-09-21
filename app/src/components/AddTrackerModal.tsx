@@ -49,8 +49,9 @@ export function AddTrackerModal({ open, onClose }: { open: boolean; onClose: () 
     <Modal open={open} onClose={onClose} title="Add Tracker">
       <div className="space-y-3">
         <div>
-          <label className="block text-sm mb-1">Name</label>
+          <label htmlFor="tracker-name" className="block text-sm mb-1">Name</label>
           <input
+            id="tracker-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-900"
@@ -59,19 +60,21 @@ export function AddTrackerModal({ open, onClose }: { open: boolean; onClose: () 
         </div>
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="block text-sm mb-1">Step size</label>
+            <label htmlFor="tracker-step" className="block text-sm mb-1">Step size</label>
             <input
               type="number"
               min={1}
+              id="tracker-step"
               value={stepSize}
               onChange={(e) => setStepSize(parseInt(e.target.value || '1', 10))}
               className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-900"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-sm mb-1">Color</label>
+            <label htmlFor="tracker-color" className="block text-sm mb-1">Color</label>
             <input
               type="color"
+              id="tracker-color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
               className="h-10 w-full rounded-lg border border-neutral-300 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900"
@@ -79,8 +82,9 @@ export function AddTrackerModal({ open, onClose }: { open: boolean; onClose: () 
           </div>
         </div>
         <div>
-          <label className="block text-sm mb-1">Icon (name)</label>
+          <label htmlFor="tracker-icon" className="block text-sm mb-1">Icon</label>
           <input
+            id="tracker-icon"
             value={icon}
             onChange={(e) => setIcon(e.target.value)}
             className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-900"
@@ -88,8 +92,9 @@ export function AddTrackerModal({ open, onClose }: { open: boolean; onClose: () 
           />
         </div>
         <div>
-          <label className="block text-sm mb-1">Tags (comma separated)</label>
+          <label htmlFor="tracker-tags" className="block text-sm mb-1">Tags (comma separated)</label>
           <input
+            id="tracker-tags"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-900"
@@ -97,7 +102,7 @@ export function AddTrackerModal({ open, onClose }: { open: boolean; onClose: () 
           />
         </div>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" checked={pinned} onChange={(e) => setPinned(e.target.checked)} />
+          <input aria-label="Pin to top" type="checkbox" checked={pinned} onChange={(e) => setPinned(e.target.checked)} />
           <span className="text-sm">Pin to top</span>
         </label>
 

@@ -32,6 +32,9 @@ In `app/`:
 - `npm run preview` — Preview production build
 - `npm run format` — Format source with Prettier
 - `npm run format:check` — Check formatting
+- `npm run test` — Run tests (Vitest)
+- `npm run test:watch` — Watch mode
+- `npm run test:coverage` — Coverage with v8
 
 ## Deployment (GitHub Pages)
 
@@ -45,6 +48,13 @@ Steps to enable:
 1. In GitHub repo Settings → Pages, set Source: GitHub Actions.
 2. Push to `stage` (staging URL) or `main` (prod URL) and wait for the Pages workflow to complete.
 3. The deployed URL will be printed in the Actions run summary (environment `github-pages`).
+
+## Branching & CI
+
+- Long-lived branches: `dev` (integration), `stage` (staging), `main` (production).
+- Work on `feature/<name>` branches off `dev`.
+- CI (lint/test/build) runs on pull requests targeting `main` only (stage → main promotions).
+- Maintainers may push directly to `dev` in solo mode; `stage` and `main` require PRs and CODEOWNERS review.
 
 ## Branching strategy
 

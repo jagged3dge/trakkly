@@ -64,20 +64,23 @@ Derived totals and charts are computed from `Event` log; no destructive edits.
 ## Environments & Releases
 - Environments: dev, staging, prod.
 - Hosting: GitHub Pages (0-cost) for PWA builds.
-- CI/CD: GitHub Actions for lint/test/build; deploy `staging` branch to staging URL, `main` to prod.
+- CI/CD: GitHub Actions
+  - CI (lint/test/build) runs only on PRs targeting `main` (stage → main release PRs).
+  - Deployments: pushes to `stage` and `main` auto-deploy via Pages workflow.
 
 ## Milestones (4 days)
 - Day 1 — Foundations
   - Repo bootstrap (Proprietary license, README). Vite + React + TS + Tailwind + PWA scaffold.
   - Dexie schema for `Tracker`, `Event`, `UserPreferences` + migrations.
-  - Crypto module (Argon2id + AES-GCM) and WebAuthn wrapper; unit tests.
   - UI skeleton: list, add tracker, increment button (writes event).
   - CI and Pages staging deployment.
 - Day 2 — UX & Insights
   - History views, daily/weekly overview, adjustments flow.
+  - Testing: set up Vitest + Testing Library; initial tests for store/utils/components.
   - Pins/tags, filters, basic charts.
   - Preferences and accessibility refinements.
 - Day 3 — Security & PWA polish
+  - Crypto module (Argon2id + AES-GCM) and WebAuthn wrapper; unit tests with vectors and invariants.
   - App lock (device unlock + passcode fallback), auto-lock.
   - Verify at-rest encryption; telemetry toggles; PWA install polish.
 - Day 4 — QA & Release
