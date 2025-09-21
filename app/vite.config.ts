@@ -53,6 +53,19 @@ export default defineConfig({
             type: 'image/svg+xml',
             purpose: 'any maskable',
           },
+          // PNG maskable icons (provide these files for best Android support)
+          {
+            src: 'icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: 'icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
           // maskable icons can be added later with PNGs for better Android support
         ],
       },
