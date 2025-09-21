@@ -11,6 +11,8 @@ const defaultPrefs: UserPreferences = {
   clockFormat: '24',
   a11yPrefs: { reducedMotion: false, highContrast: false },
   telemetryEnabled: false,
+  sentryEnabled: false,
+  posthogEnabled: false,
   deviceUnlockEnabled: false,
   autoLockMinutes: 5,
 }
@@ -26,6 +28,8 @@ export type PrefsState = {
   setReducedMotion: (value: boolean) => Promise<void>
   setHighContrast: (value: boolean) => Promise<void>
   setTelemetryEnabled: (value: boolean) => Promise<void>
+  setSentryEnabled: (value: boolean) => Promise<void>
+  setPosthogEnabled: (value: boolean) => Promise<void>
   setDeviceUnlockEnabled: (value: boolean) => Promise<void>
   setDeviceCredentialId: (id?: string) => Promise<void>
   setAutoLockMinutes: (mins?: number) => Promise<void>
@@ -87,6 +91,20 @@ export const usePrefs = create<PrefsState>((set, get) => ({
   setTelemetryEnabled: async (value) => {
     const current = get().prefs
     const next = { ...current, telemetryEnabled: value }
+    await db.preferences.put(next)
+    set({ prefs: next })
+  },
+
+  setSentryEnabled: async (value) => {
+    const current = get().prefs
+    const next = { ...current, sentryEnabled: value }
+    await db.preferences.put(next)
+    set({ prefs: next })
+  },
+
+  setPosthogEnabled: async (value) => {
+    const current = get().prefs
+    const next = { ...current, posthogEnabled: value }
     await db.preferences.put(next)
     set({ prefs: next })
   },

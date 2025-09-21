@@ -4,8 +4,8 @@ import { usePrefs } from '../state/prefs'
 import { useAdapters } from '../providers/AdaptersProvider'
 
 export default function Preferences() {
-  const { prefs, loaded, load, setTimezone, setLocale, setClockFormat, setReducedMotion, setHighContrast, setTelemetryEnabled, setDeviceUnlockEnabled, setDeviceCredentialId, setAutoLockMinutes } = usePrefs()
-  const { crypto, deviceUnlock } = useAdapters()
+  const { prefs, loaded, load, setTimezone, setLocale, setClockFormat, setReducedMotion, setHighContrast, setTelemetryEnabled, setSentryEnabled, setPosthogEnabled, setDeviceUnlockEnabled, setDeviceCredentialId, setAutoLockMinutes } = usePrefs()
+  const { crypto, deviceUnlock, env } = useAdapters()
   const navigate = useNavigate()
   const [deviceSupported, setDeviceSupported] = useState<boolean>(false)
   const [deviceBusy, setDeviceBusy] = useState<boolean>(false)
@@ -120,6 +120,26 @@ export default function Preferences() {
           />
           Enable telemetry
         </label>
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={!!prefs.sentryEnabled}
+              onChange={(e) => setSentryEnabled(e.target.checked)}
+              disabled={!env.telemetry.sentryDsn}
+            />
+            Sentry (crash reporting)
+          </label>
+          <label className="inline-flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={!!prefs.posthogEnabled}
+              onChange={(e) => setPosthogEnabled(e.target.checked)}
+              disabled={!env.telemetry.posthogKey}
+            />
+            PostHog (analytics)
+          </label>
+        </div>
       </div>
 
       <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
