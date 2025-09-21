@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { loadEnv, type EnvConfig } from '../config/env';
-import { NoopTelemetryAdapter, type TelemetryAdapter } from '../adapters/telemetry';
+import { MultiTelemetryAdapter, SentryTelemetryAdapter, PosthogTelemetryAdapter, type TelemetryAdapter } from '../adapters/telemetry';
 import { LocalOnlySyncAdapter, type SyncAdapter } from '../adapters/sync';
 import { PlaceholderCryptoEngine, WebCryptoEngine, type CryptoEngine } from '../adapters/crypto';
 import { NoopDeviceUnlockAdapter, type DeviceUnlockAdapter } from '../adapters/deviceUnlock';
@@ -21,11 +21,12 @@ export function AdaptersProvider({ children }: { children: React.ReactNode }) {
   const env = useMemo(() => loadEnv(), []);
   const { prefs, loaded, load } = usePrefs();
 
-  const telemetry = useMemo(() => {
-    const t = new NoopTelemetryAdapter();
-    // initial enable follows env; will be updated once prefs load
-    t.setEnabled(!!env.telemetry.enabled);
-    return t;
+  const { telemetry, sentryAdapter, posthogAdapter } = useMemo(() => {
+    const sentryAdapter = new SentryTelemetryAdapter(env.telemetry.sentryDsn)
+    const posthogAdapter = new PosthogTelemetryAdapter(env.telemetry.posthogKey, env.telemetry.posthogHost)
+    const telemetry = new MultiTelemetryAdapter([sentryAdapter, posthogAdapter])
+    telemetry.setEnabled(!!env.telemetry.enabled)
+    return { telemetry, sentryAdapter, posthogAdapter }
   }, [env]);
 
   const sync = useMemo(() => {
@@ -51,11 +52,13 @@ export function AdaptersProvider({ children }: { children: React.ReactNode }) {
     if (!loaded) void load();
   }, [loaded, load]);
 
-  // Apply telemetryEnabled preference whenever it changes
+  // Apply telemetry preferences whenever they change
   useEffect(() => {
-    const shouldEnable = !!env.telemetry.enabled && !!prefs.telemetryEnabled;
-    telemetry.setEnabled(shouldEnable);
-  }, [env.telemetry.enabled, prefs.telemetryEnabled, telemetry]);
+    const base = !!env.telemetry.enabled && !!prefs.telemetryEnabled
+    telemetry.setEnabled(base)
+    sentryAdapter.setEnabled(base && !!env.telemetry.sentryDsn && !!prefs.sentryEnabled)
+    posthogAdapter.setEnabled(base && !!env.telemetry.posthogKey && !!prefs.posthogEnabled)
+  }, [env.telemetry.enabled, env.telemetry.sentryDsn, env.telemetry.posthogKey, prefs.telemetryEnabled, prefs.sentryEnabled, prefs.posthogEnabled, telemetry, sentryAdapter, posthogAdapter]);
 
   return (
     <AdaptersContext.Provider value={value}>{children}</AdaptersContext.Provider>

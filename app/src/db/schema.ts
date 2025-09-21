@@ -39,6 +39,8 @@ export type UserPreferences = {
   clockFormat: ClockFormat;
   a11yPrefs?: AccessibilityPrefs;
   telemetryEnabled?: boolean;
+  sentryEnabled?: boolean;
+  posthogEnabled?: boolean;
   deviceUnlockEnabled?: boolean;
   deviceCredentialId?: string; // base64url rawId
   autoLockMinutes?: number; // minutes; if set, auto-lock after inactivity
