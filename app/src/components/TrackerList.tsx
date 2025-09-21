@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { useTrakkly } from '../state/store'
-import { AddTrackerModal } from './AddTrackerModal'
-import { AdjustModal } from './AdjustModal'
-import { EventList } from './EventList'
+
+// Lazy-load non-critical UI used after initial paint (map named exports to default for React.lazy)
+const AddTrackerModalLazy = lazy(() => import('./AddTrackerModal').then(m => ({ default: m.AddTrackerModal })))
+const AdjustModalLazy = lazy(() => import('./AdjustModal').then(m => ({ default: m.AdjustModal })))
+const EventListLazy = lazy(() => import('./EventList').then(m => ({ default: m.EventList })))
 
 export function TrackerList() {
   const { trackers, init, createTracker, increment, togglePin } = useTrakkly()
@@ -138,7 +140,9 @@ export function TrackerList() {
               </div>
               {openHistory[t.id] && (
                 <div className="mt-2">
-                  <EventList trackerId={t.id} />
+                  <Suspense fallback={<p className="text-sm text-neutral-500">Loading…</p>}>
+                    <EventListLazy trackerId={t.id} />
+                  </Suspense>
                 </div>
               )}
             </li>
@@ -146,13 +150,17 @@ export function TrackerList() {
           </ul>
         </>
       )}
-      <AddTrackerModal open={showAdd} onClose={() => setShowAdd(false)} />
+      <Suspense fallback={null}>
+        <AddTrackerModalLazy open={showAdd} onClose={() => setShowAdd(false)} />
+      </Suspense>
       {adjustId && (
-        <AdjustModal
-          open={!!adjustId}
-          trackerId={adjustId}
-          onClose={() => setAdjustId(null)}
-        />
+        <Suspense fallback={null}>
+          <AdjustModalLazy
+            open={!!adjustId}
+            trackerId={adjustId}
+            onClose={() => setAdjustId(null)}
+          />
+        </Suspense>
       )}
     </div>
   )
