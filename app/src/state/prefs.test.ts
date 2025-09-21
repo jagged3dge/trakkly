@@ -3,23 +3,29 @@ import { usePrefs } from './prefs'
 import { resetDb } from '../test/resetDb'
 import { db } from '../db/db'
 
+const DEFAULT_PREFS_STATE = {
+  prefs: {
+    id: 'user',
+    timezone: undefined,
+    locale: undefined,
+    clockFormat: '24',
+    a11yPrefs: { reducedMotion: false, highContrast: false },
+    telemetryEnabled: false,
+  },
+  loading: false,
+  loaded: false,
+};
+
 function resetStore() {
   usePrefs.setState({
-    prefs: {
-      id: 'user',
-      timezone: undefined,
-      locale: undefined,
-      clockFormat: '24',
-      a11yPrefs: { reducedMotion: false, highContrast: false },
-    },
-    loading: false,
-    loaded: false,
+    ...DEFAULT_PREFS_STATE,
     load: usePrefs.getState().load,
     setTimezone: usePrefs.getState().setTimezone,
     setLocale: usePrefs.getState().setLocale,
     setClockFormat: usePrefs.getState().setClockFormat,
     setReducedMotion: usePrefs.getState().setReducedMotion,
     setHighContrast: usePrefs.getState().setHighContrast,
+    setTelemetryEnabled: usePrefs.getState().setTelemetryEnabled,
   })
 }
 
