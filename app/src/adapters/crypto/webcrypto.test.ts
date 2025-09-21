@@ -12,6 +12,24 @@ describe('WebCryptoEngine (PBKDF2 + AES-GCM)', () => {
     await resetDb()
   })
 
+  it('changePasscode rewraps key and allows new unlock while old fails', async () => {
+    const e1 = new WebCryptoEngine()
+    await e1.unlockWithPasscode!('oldpass')
+    // change passcode
+    const ok = await e1.changePasscode!('oldpass', 'newpass')
+    expect(ok).toBe(true)
+    e1.lock()
+
+    const eOld = new WebCryptoEngine()
+    const oldOk = await eOld.unlockWithPasscode!('oldpass')
+    expect(oldOk).toBe(false)
+
+    const eNew = new WebCryptoEngine()
+    const newOk = await eNew.unlockWithPasscode!('newpass')
+    expect(newOk).toBe(true)
+    expect(eNew.isUnlocked()).toBe(true)
+  })
+
   it('unlocks with passcode, persists wrappedKey and can re-unlock', async () => {
     const engine1 = new WebCryptoEngine()
     expect(engine1.isUnlocked()).toBe(false)
