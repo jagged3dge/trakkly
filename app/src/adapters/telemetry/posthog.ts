@@ -12,6 +12,8 @@ export class PosthogTelemetryAdapter implements TelemetryAdapter {
 
   init(): void {
     // Placeholder: integrate posthog-js here when keys are present
+    // reference host to avoid unused warnings in TS until fully wired
+    void this.host
   }
 
   setEnabled(enabled: boolean): void {
